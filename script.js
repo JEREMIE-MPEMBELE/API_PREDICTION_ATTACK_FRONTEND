@@ -2,16 +2,15 @@
 // Configuration
 // ============================================
 
-// METS TON URL RENDER ICI
 const API_URL = 'https://api-prediction-attack-backend.onrender.com/predict';
-// Sélecteurs DOM
+
 const form = document.getElementById('predictForm');
 const resultBox = document.getElementById('resultBox');
 const resultContent = document.getElementById('resultContent');
 const errorBox = document.getElementById('errorBox');
 
 // ============================================
-// Validation renforcée des champs
+// Validation des champs
 // ============================================
 
 function validateField(value, fieldName, min, max) {
@@ -28,11 +27,6 @@ function validateField(value, fieldName, min, max) {
     return { valid: true, value: num };
 }
 
-function sanitizeInput(value) {
-    // Supprime les caractères dangereux (XSS)
-    return value.replace(/[<>{}()'";]/g, '').trim();
-}
-
 // ============================================
 // Soumission du formulaire
 // ============================================
@@ -40,19 +34,19 @@ function sanitizeInput(value) {
 form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    // --- 1. Récupérer et nettoyer les valeurs ---
+    // --- 1. Récupération des valeurs ---
     const raw_network = document.getElementById('network_size').value;
     const raw_login = document.getElementById('login_attempt').value;
     const raw_session = document.getElementById('session').value;
     const raw_ip = document.getElementById('ip_reputation').value;
     const raw_failed = document.getElementById('failed_login').value;
 
-    // --- 2. Validation des champs ---
+    // --- 2. Validation ---
     const validations = [
         validateField(raw_network, 'Taille du réseau', 0, 100000),
         validateField(raw_login, 'Tentatives de connexion', 0, 10000),
         validateField(raw_session, 'Durée session', 0, 100000),
-        validateField(raw_ip, 'Réputation IP', -1, 2),
+        validateField(raw_ip, 'Réputation IP', 0, 1),
         validateField(raw_failed, 'Échecs de connexion', 0, 1000)
     ];
 
@@ -69,7 +63,7 @@ form.addEventListener('submit', async function (e) {
     const ip_reputation = validations[3].value;
     const failed_login = validations[4].value;
 
-    // --- 3. Sanitisation ---
+    // --- 3. Construction du payload (conforme au schéma Pydantic) ---
     const payload = {
         network_packet_size: network_size,
         login_attempts: login_attempt,
@@ -78,7 +72,6 @@ form.addEventListener('submit', async function (e) {
         failed_logins: failed_login
     };
 
-    // --- 4. Masquer les anciens messages ---
     hideResults();
 
     try {
@@ -90,9 +83,20 @@ form.addEventListener('submit', async function (e) {
             body: JSON.stringify(payload),
         });
 
+        // --- 4. Gestion des erreurs HTTP ---
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || `Erreur ${response.status}`);
+            let errorMessage = `Erreur ${response.status}`;
+            try {
+                const errorData = await response.json();
+                if (errorData.detail) {
+                    errorMessage = typeof errorData.detail === 'string' 
+                        ? errorData.detail 
+                        : JSON.stringify(errorData.detail);
+                }
+            } catch (_) {
+                // Si le corps n'est pas JSON, on garde le message par défaut
+            }
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -152,7 +156,7 @@ function hideResults() {
 }
 
 // ============================================
-// Gestion du clavier (Entrée = soumission)
+// Gestion clavier (Entrée)
 // ============================================
 
 document.addEventListener('keydown', function (e) {
