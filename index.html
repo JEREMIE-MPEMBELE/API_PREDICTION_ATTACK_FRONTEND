@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prédiction Cybersécurité</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ CyberPred</h1>
+        <div class="subtitle">
+            <span class="status-badge online">● API en ligne</span>
+        </div>
+
+        <form id="predictForm">
+            <div class="form-group">
+                <label for="network_size">🌐 Taille du réseau</label>
+                <input type="number" step="any" id="network_size" placeholder="Ex : 1500" required />
+            </div>
+            <div class="form-group">
+                <label for="login_attempt">🔑 Tentatives de connexion</label>
+                <input type="number" step="any" id="login_attempt" placeholder="Ex : 5" required />
+            </div>
+            <div class="form-group">
+                <label for="session">⏳ Durée session</label>
+                <input type="number" step="any" id="session" placeholder="Ex : 120.5" required />
+            </div>
+            <div class="form-group">
+                <label for="ip_reputation">📊 Réputation IP</label>
+                <input type="number" step="any" id="ip_reputation" placeholder="Ex : 0.85" required />
+            </div>
+            <div class="form-group">
+                <label for="failed_login">🚫 Échecs de connexion</label>
+                <input type="number" step="any" id="failed_login" placeholder="Ex : 2" required />
+            </div>
+
+            <button type="submit" class="btn-predict">🚀 Prédire l'attaque</button>
+        </form>
+
+        <div id="resultBox" class="result-box">
+            <div class="label">🔍 Résultat de la prédiction</div>
+            <div id="resultContent"></div>
+        </div>
+
+        <div id="errorBox" class="error-box"></div>
+
+        <!-- ===== FOOTER PERSONNALISÉ ===== -->
+        <div class="footer">
+            <p class="footer-name">Développé par <strong>Jeremie MPEMBELE</strong></p>
+            <p class="footer-phone">📞 0812090946</p>
+            <p class="footer-version">FastAPI • Modèle CyberSecurité v1</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
