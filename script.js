@@ -4,7 +4,6 @@
 
 // METS TON URL RENDER ICI
 const API_URL = 'https://api-prediction-attack-backend.onrender.com/predict';
-
 // Sélecteurs DOM
 const form = document.getElementById('predictForm');
 const resultBox = document.getElementById('resultBox');
